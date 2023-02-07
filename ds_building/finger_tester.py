@@ -5,28 +5,26 @@ import mediapipe as mp
 import pickle
 
 
-model = tf.keras.models.load_model('model_s_500-500-500-1003-20')
+model = tf.keras.models.load_model('model_s_500-500-500-1005-20')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-url = "http://192.168.1.54:2333/shot.jpg"
 
 lastid = 0
 notpushing = 0
 cv2.startWindowThread()
+
+cap = cv2.VideoCapture('./videos/test2.mp4')
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,
     min_tracking_confidence=0.8) as hands:
-  while True:
-        # print(idx)
-        img_resp = requests.get(url)
-        img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
-        img = cv2.imdecode(img_arr, -1)
-        
-        image = img
+  while True:      
+        res,image = cap.read()
+        if not res:
+          break
         
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -79,9 +77,18 @@ with mp_hands.Hands(
         #     text = 'Raised'
         # else:
         #     text = 'Pushing'
-        text = str(model(np.array([tmp])).numpy()[0][0])
+        res = model(np.array([tmp])).numpy()
+        res = np.round(res,decimals=2)
+        
+        
+        # text = [0 for i in range(10)]
+        # for id in idx:
+        #     text[id[0]] = 1
+        text = str(res)
+        
         image = cv2.resize(cv2.flip(image, 1),(1280,720))
-
+        
+        
         cv2.putText(image,text, 
             bottomLeftCornerOfText, 
             font, 
@@ -92,8 +99,8 @@ with mp_hands.Hands(
 
         cv2.imshow('MediaPipe Hands', image)
 
-        cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
-        lastid += 1 
+        # cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
+        # lastid += 1 
         # if model(np.array([tmp])).numpy()[0][0] > 0.8:
         #   cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
         #     lastid += 1

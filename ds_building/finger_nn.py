@@ -3,6 +3,7 @@ import re
 import pickle
 import numpy as np
 import random
+import copy
 
 import tensorflow as tf
 print("TensorFlow version:", tf.__version__)
@@ -39,23 +40,20 @@ def load_dataset():
         x_temp.append(tmp)
         
         with (open('./y/' + f, 'rb')) as fl:
-            y_temp.append(pickle.load(fl)) 
+            res = pickle.load(fl)
+        y_temp.append(res.copy()) 
 
+    
     
     raw = list(zip(x_temp, y_temp))
     random.shuffle(raw)
     for i in range(int(len(raw)*trainperc), len(raw)):
         x_test.append(raw[i][0])
-        if raw[i][1]:
-            y_test.append(1)
-        else:
-            y_test.append(0)
+        y_test.append(raw[i][1])
+    
     for i in range(int(len(raw) * trainperc)):
         x_train.append(raw[i][0])
-        if raw[i][1]:
-            y_train.append(1)
-        else:
-            y_train.append(0)
+        y_train.append(raw[i][1])
 
     return (np.asarray(x_train), np.asarray(y_train)), (np.asarray(x_test), np.asarray(y_test))
 
@@ -73,14 +71,14 @@ model = tf.keras.models.Sequential([
     # input layer
     tf.keras.layers.Flatten(input_shape=((126,))),
     # middle layers
-    tf.keras.layers.Dense(500, activation='relu'),
-    tf.keras.layers.Dense(500, activation='relu'),
-    tf.keras.layers.Dense(500, activation='relu'),
+    tf.keras.layers.Dense(500, activation='sigmoid'),
+    tf.keras.layers.Dense(500, activation='sigmoid'),
+    tf.keras.layers.Dense(500, activation='sigmoid'),
     # tf.keras.layers.Dense(200, activation='sigmoid'),
     # testing purpose layer
     tf.keras.layers.Dropout(0.2),
     # output layer
-    tf.keras.layers.Dense(1)
+    tf.keras.layers.Dense(10, activation='softmax')
 ])
 
 # model = tf.keras.models.load_model('model_200-5000-20')
@@ -93,7 +91,7 @@ print(predictions)
 # print(tf.nn.softmax(predictions).numpy())
 
 # declare loss function
-loss_fn = tf.keras.losses.MeanSquaredError()
+loss_fn = tf.keras.losses.CategoricalCrossentropy()
 
 # print loss
 print(loss_fn(y_train[:1], predictions).numpy())
@@ -104,10 +102,10 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # training
-train_h = model.fit(x_train, y_train, epochs=1000, batch_size=30)
+train_h = model.fit(x_train, y_train, epochs=800, batch_size=20)
 
 # model_hidden-layer-neurons_epochs_batch-size
-model.save('model_s_500-500-500-1003-20')
+model.save('model_s_500-500-500-1005-20')
 
 print ('finished fitting')
 # testing

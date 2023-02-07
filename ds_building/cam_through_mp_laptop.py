@@ -13,13 +13,15 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-url = "http://localhost:5555/shot.jpg"
-
 idx = 0
 commands = ['Push', 'Dont push'] 
 command_timeout = 3
 cidx = 1
 lasttime = time.time()
+
+
+vid = cv2.VideoCapture(0)
+
 
 if 'pictures' not in os.listdir(): 
     os.mkdir('./pictures')
@@ -28,16 +30,12 @@ if 'pictures' not in os.listdir():
 cv2.startWindowThread()
 with mp_hands.Hands(
     model_complexity=1,
-    min_detection_confidence=0.8,
-    min_tracking_confidence=0.8) as hands:
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5) as hands:
   while True:
       # print(idx)
-      img_resp = requests.get(url)
-      img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
-      img = cv2.imdecode(img_arr, -1)
-    
-      image = img
-      
+      res, image = vid.read() 
+
       # To improve performance, optionally mark the image as not writeable to
       # pass by reference.
       image.flags.writeable = False

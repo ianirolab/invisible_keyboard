@@ -6,23 +6,28 @@ imgs = []
 names = os.listdir('./pictures')
 names.sort()
 
-i = 0
+cv2.namedWindow('Picture')        # Create a named window
+cv2.moveWindow('Picture', 0,0)
+
+i = 976
+
 while (i < len(names)):
     try:
         fname = names[names.index(str(i) + '.png')]
         img = cv2.imread('./pictures/' + fname)
     except:
+        i+=1
         continue
     if(img is None):
         continue
 
-    cv2.imshow(fname, img)
+    cv2.imshow('Picture', cv2.resize(img,(1280,720)))
     
     k = cv2.waitKey(0)
     if (k == ord('1')):
         imgs.append(fname)
         print(fname)
-    elif (k == 81):
+    elif (k == ord('a')):
         i = i - 2
     
     i += 1
