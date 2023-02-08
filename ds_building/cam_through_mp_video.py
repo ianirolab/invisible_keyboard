@@ -32,7 +32,7 @@ for v in os.listdir('videos'):
   with mp_hands.Hands(
       model_complexity=1,
       min_detection_confidence=0.8,
-      min_tracking_confidence=0.8) as hands:
+      min_tracking_confidence=0.5) as hands:
     while True:
         
         res,image = cap.read()
@@ -60,34 +60,35 @@ for v in os.listdir('videos'):
                 mp_drawing_styles.get_default_hand_landmarks_style(),
                 mp_drawing_styles.get_default_hand_connections_style())
         
-        img = cv2.flip(image, 1)
+        # img = cv2.flip(image, 1)
         # Write some Text
 
-        font                   = cv2.FONT_HERSHEY_SIMPLEX
-        bottomLeftCornerOfText = (10,30)
-        fontScale              = 1
-        fontColor              = (0,255,0)
-        thickness              = 2
-        lineType               = 2
+        # font                   = cv2.FONT_HERSHEY_SIMPLEX
+        # bottomLeftCornerOfText = (10,30)
+        # fontScale              = 1
+        # fontColor              = (0,255,0)
+        # thickness              = 2
+        # lineType               = 2
 
-        cv2.putText(img,str(frame) + '/' + length , 
-            bottomLeftCornerOfText, 
-            font, 
-            fontScale,
-            fontColor,
-            thickness,
-            lineType)
+        # cv2.putText(img,str(frame) + '/' + length , 
+        #     bottomLeftCornerOfText, 
+        #     font, 
+        #     fontScale,
+        #     fontColor,
+        #     thickness,
+        #     lineType)
 
-        cv2.imshow("Output", cv2.resize(img,(1280,720)))
+        # cv2.imshow("Output", cv2.resize(img,(1280,720)))
+        print(str(frame) + '/' + length + '    ', end = '\r') 
 
-        if (time.time() > lasttime + command_timeout):
-          lasttime = time.time()
-          cidx = (cidx + 1) % len(commands)
+        # if (time.time() > lasttime + command_timeout):
+        #   lasttime = time.time()
+        #   cidx = (cidx + 1) % len(commands)
 
-        print(idx)
-        if (not results.multi_hand_landmarks )or len(results.multi_hand_landmarks) != 2:
-          cv2.waitKey(1)
-          continue
+        # print(idx)
+        # if (not results.multi_hand_landmarks )or len(results.multi_hand_landmarks) != 2:
+        #   cv2.waitKey(1)
+        #   continue
 
         
         cv2.imwrite('./pictures/'+str(idx)+'.png', cv2.flip(image,2))
@@ -95,8 +96,6 @@ for v in os.listdir('videos'):
           pickle.dump(results.multi_hand_landmarks,f)
 
         idx += 1
-        if (idx == 1000):
-          break
 
         if cv2.waitKey(5) & 0xFF == 27:
           break

@@ -5,7 +5,7 @@ import mediapipe as mp
 import pickle
 
 
-model = tf.keras.models.load_model('model_s_500-500-500-1005-20')
+model = tf.keras.models.load_model('model_s_500-500-500-200-20')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -16,7 +16,7 @@ lastid = 0
 notpushing = 0
 cv2.startWindowThread()
 
-cap = cv2.VideoCapture('./videos/test2.mp4')
+cap = cv2.VideoCapture('./videos/VID_20230207_112746.mp4')
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,

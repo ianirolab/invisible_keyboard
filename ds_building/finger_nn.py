@@ -8,7 +8,7 @@ import copy
 import tensorflow as tf
 print("TensorFlow version:", tf.__version__)
 
-trainperc = 0.8
+trainperc = 0.85
 
 def load_dataset():
     x_temp = []
@@ -102,10 +102,10 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # training
-train_h = model.fit(x_train, y_train, epochs=800, batch_size=20)
+train_h = model.fit(x_train, y_train, epochs=200, batch_size=30)
 
 # model_hidden-layer-neurons_epochs_batch-size
-model.save('model_s_500-500-500-1005-20')
+model.save('model_s_500-500-500-200-20')
 
 print ('finished fitting')
 # testing

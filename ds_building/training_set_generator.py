@@ -13,8 +13,8 @@ for i in range(len(lines)):
     
 ct = 0
 for n in os.listdir('results'):
-    if ct == 70:
-        break
+    # if ct == 70:
+    #     break
     flag = False
     for l in lines:
         if l[0] == n:

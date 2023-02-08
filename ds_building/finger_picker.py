@@ -10,6 +10,7 @@ r_mig = []
 r_anu = []
 r_mid = []
 r_ind = []
+raised = []
 
 names = os.listdir('./pictures')
 names.sort()
@@ -17,9 +18,10 @@ names.sort()
 cv2.namedWindow('Picture')        # Create a named window
 cv2.moveWindow('Picture', 0,0)
 
-i = 976
-
-while (i < len(names)):
+i = 9000 
+maxi = i + 1000
+while (i < maxi ):
+# while (i < 10):
     try:
         fname = names[names.index(str(i) + '.png')]
         img = cv2.imread('./pictures/' + fname)
@@ -29,7 +31,7 @@ while (i < len(names)):
     if(img is None):
         continue
 
-    cv2.imshow('Picture', cv2.resize(img,(1280,720)))
+    cv2.imshow(str(i), cv2.resize(img,(1280,720)))
     
     k = cv2.waitKey(0)
     if (k == ord('q')):
@@ -42,7 +44,7 @@ while (i < len(names)):
         l_mid.append(fname)
     elif (k == ord('f')):
         l_ind.append(fname)
-    elif (k == ord('c')):
+    elif (k == ord('c') or k == ord('c')):
         thumb.append(fname)
     elif (k == ord('j')):
         r_ind.append(fname)
@@ -52,17 +54,31 @@ while (i < len(names)):
         r_anu.append(fname)
     elif (k == ord(';')):
         r_mig.append(fname)
+    elif (k == ord('2')):
+        os.remove('./pictures/' + fname)
+        os.remove('./results/' + fname[:-4])
     
     i += 1
 
     cv2.destroyAllWindows()
-    if (k == ord('2')):
-        os.remove('./pictures/' + fname)
-        os.remove('./results/' + fname[:-4])
 
-lists = [l_mig,l_anu,l_mid,l_ind,thumb,r_ind,r_mid,r_anu,r_mig]
+# complete = l_mig.copy()
+# complete.extend(l_anu)
+# complete.extend(l_mid)
+# complete.extend(l_ind)
+# complete.extend(r_mig)
+# complete.extend(r_anu)
+# complete.extend(r_mid)
+# complete.extend(r_ind)
+# complete.extend(thumb)
 
-with open('pushing.txt','w') as f:
+# for f in os.listdir('pictures'):
+#     if f not in complete:   
+#         raised.append(f)    
+
+lists = [l_mig,l_anu,l_mid,l_ind,thumb,r_ind,r_mid,r_anu,r_mig, raised]
+
+with open('pushing.txt','a') as f:
     for i in range(len(lists)):
         for img in lists[i]: 
             f.write(img +' '+str(i) +'\n') 
