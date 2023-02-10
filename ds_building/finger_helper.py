@@ -1,10 +1,16 @@
+# A mix between finger tester and finger picker, improves image picking by guessing the finger 
+
+
+import os
 import tensorflow as tf
 import cv2, requests
 import numpy as np
 import mediapipe as mp
 import pickle
-from model_manager import getModel0, getModel1
+from model_manager import *
 
+
+# model = getTempModel()
 model = getModel1()
 
 mp_drawing = mp.solutions.drawing_utils
@@ -15,8 +21,19 @@ mp_hands = mp.solutions.hands
 lastid = 0
 notpushing = 0
 cv2.startWindowThread()
+picid = 0
+if 'x2' not in os.listdir():  
+    os.mkdir('./x2')
+    os.mkdir('./y2')
+elif len(os.listdir('./x')) > 0:
+    a = [int(x) for x in os.listdir('./x')]
+    picid = max(a)
+    print(picid)
 
-cap = cv2.VideoCapture('./videos/tester2.mp4')
+picid = 0
+
+# cap = cv2.VideoCapture('./history/videos/v-0-50-1.mp4')
+cap = cv2.VideoCapture('./videos/tester2.mp4')   
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,
@@ -24,7 +41,7 @@ with mp_hands.Hands(
   while True:      
         res,image = cap.read()
         if not res:
-          break
+            break
         
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -78,10 +95,10 @@ with mp_hands.Hands(
         # else:
         #     text = 'Pushing'
         res = model(np.array([tmp])).numpy()
-        rl = np.round(res,decimals=2).tolist()[0]
-        
-        stautuses = ('sx mig','sx_anu','sx_mid','sx_ind','thumb','dx_ind','dx_mid','dx_anu','dx_mig','raised')
-        text = stautuses[rl.index(max(rl))]
+        rl = res.tolist()[0]
+        idx = rl.index(max(rl))
+        stautuses = ('sx_mig','sx_anu','sx_mid','sx_ind','thumb','dx_ind','dx_mid','dx_anu','dx_mig','raised')
+        text = stautuses[idx]
 
         image = cv2.resize(cv2.flip(image, 1),(1280,720))
         
@@ -96,14 +113,45 @@ with mp_hands.Hands(
 
         cv2.imshow('MediaPipe Hands', image)
 
-        # cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
-        # lastid += 1 
-        # if model(np.array([tmp])).numpy()[0][0] > 0.8:
-        #     cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
-        #     lastid += 1
-        # else:
-        #     notpushing += 1
-        # print(notpushing)
         
-        if cv2.waitKey(3) & 0xFF == 27:
-            break
+        
+        k = cv2.waitKey(0)
+        if (k==13):
+            pass
+        elif (k == ord('q')):
+            picid -= 1
+        elif (k == ord('a')):
+            idx = 0
+        elif (k == ord('s')):
+            idx = 1
+        elif (k == ord('d')):
+            idx = 2
+        elif (k == ord('f')):
+            idx = 3
+        elif (k == ord('c') or k == ord('c')):
+            idx = 4
+        elif (k == ord('j')):
+            idx = 5
+        elif (k == ord('k')):
+            idx = 6
+        elif (k == ord('l')):
+            idx = 7
+        elif (k == ord(';')):
+            idx = 8
+        # else:
+        #     continue
+        elif (k == ord('2')):
+            continue
+        else:
+            idx = 9
+
+        y = [0 for i in range(10)]
+        y[idx] = 1
+        with open('./x2/'+str(picid),'wb') as f:
+            pickle.dump(tmp,f)
+        with open('./y2/'+str(picid),'wb') as f:
+            pickle.dump(y,f)
+
+
+
+        picid+=1

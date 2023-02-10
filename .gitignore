@@ -8,3 +8,5 @@ y*
 *.txt
 train_h
 videos*
+ext-test-log
+__pycache*
