@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 import random
 import copy
-from model_manager import getModel0, getModel1
+from in_model_manager import getModel0, getModel1
 from graphs import plot
 
 import tensorflow as tf

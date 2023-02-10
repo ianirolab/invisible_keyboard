@@ -7,7 +7,7 @@ import cv2, requests
 import numpy as np
 import mediapipe as mp
 import pickle
-from model_manager import *
+from in_model_manager import *
 
 
 # model = getTempModel()
