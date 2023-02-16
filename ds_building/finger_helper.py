@@ -1,65 +1,50 @@
-# A mix between finger tester and finger picker, improves image picking by guessing the finger 
+# Display live the results of the last neural networks trained for finger recognition and save the frames.
+# Having guesses while recording pictures helps finding hand position with which the neural network
+# is not familiar with 
 
 
-import os
-import tensorflow as tf
-import cv2, requests
+import pickle
+import cv2
 import numpy as np
 import mediapipe as mp
-import pickle
-from in_model_manager import *
+from in_model_manager import getFingerModel, db_setup, subf
 
+xdir = 'x1'
+ydir = 'y1'
 
-model = getTempModel()
-# model = getModel1()
+db_setup('x1','y1')
+
+model = getFingerModel()
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
+font                   = cv2.FONT_HERSHEY_SIMPLEX
+bottomLeftCornerOfText = (10,30)
+fontScale              = 1
+fontColor              = (0,255,0)
+thickness              = 2
+lineType               = 2
 
-lastid = 0
-notpushing = 0
+
 cv2.startWindowThread()
+cap = cv2.VideoCapture('./ds_building/inputs/videos/tester3.mp4')   
+
 picid = 0
-if 'x2' not in os.listdir():  
-    os.mkdir('./x2')
-    os.mkdir('./y2')
-if 'x-test2' not in os.listdir():  
-    os.mkdir('./x-test2')
-    os.mkdir('./y-test2')
-elif len(os.listdir('./x')) > 0:
-    a = [int(x) for x in os.listdir('./x')]
-    picid = max(a) + 1
-    # a = [int(x) for x in os.listdir('./x-test')]
-    # picid = max(a) + 1
-    print(picid)
-
-# picid = 0
-
-# cap = cv2.VideoCapture('./videos/v-0-70-6.mp4')
-cap = cv2.VideoCapture('./videos/tester3.mp4')   
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,
     min_tracking_confidence=0.4) as hands:
-    # for f in range(2390):
-    #     f = str(f)
   while True:      
         res,image = cap.read()
         if not res:
             break
-        # image = cv2.imread('./pictures/'+f+'.png')
-        # with open('./results/'+f,'rb') as fl:
-        #     result = pickle.load(fl)
         
-        # To improve performance, optionally mark the image as not writeable to
-        # pass by reference.
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = hands.process(image)
 
-        # Draw the hand annotations on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
@@ -73,15 +58,12 @@ with mp_hands.Hands(
                 mp_drawing_styles.get_default_hand_landmarks_style(),
                 mp_drawing_styles.get_default_hand_connections_style())
         
-        # Flip the image horizontally for a selfie-view display.
-        cv2.imshow('MediaPipe Hands', cv2.resize(cv2.flip(image, 1),(1280,720)))
 
         if (not results.multi_hand_landmarks )or len(results.multi_hand_landmarks) != 2:
             cv2.waitKey(1)
             continue
         
         x = results.multi_hand_landmarks
-        # x = result
         tmp = []
         for i in range(21):
 
@@ -94,22 +76,10 @@ with mp_hands.Hands(
             tmp.append(x[1].landmark[i].z)
 
         
-        
-        font                   = cv2.FONT_HERSHEY_SIMPLEX
-        bottomLeftCornerOfText = (10,30)
-        fontScale              = 1
-        fontColor              = (0,255,0)
-        thickness              = 2
-        lineType               = 2
-        # if model(np.array([tmp])) < 0.3:
-        #     text = 'Raised'
-        # else:
-        #     text = 'Pushing'
         res = model(np.array([tmp])).numpy()
         rl = res.tolist()[0]
         idx = rl.index(max(rl))
-        stautuses = ('sx_mig','sx_anu','sx_mid','sx_ind','thumb','dx_ind','dx_mid','dx_anu','dx_mig','raised')
-        text = stautuses[idx]
+        text = subf[idx]
 
         image = cv2.resize(cv2.flip(image, 1),(1280,720))
         
@@ -122,7 +92,7 @@ with mp_hands.Hands(
             thickness,
             lineType)
 
-        cv2.imshow('MediaPipe Hands', image)
+        cv2.imshow('Finger Helper', image)
 
         
         
@@ -158,14 +128,11 @@ with mp_hands.Hands(
 
         y = [0 for i in range(10)]
         y[idx] = 1
-        # with open('./x2/'+str(picid),'wb') as f:
-        #     pickle.dump(tmp,f)
-        # with open('./y2/'+str(picid),'wb') as f:
-        #     pickle.dump(y,f)
-        # with open('./x-test2/'+str(picid),'wb') as f:
-        #     pickle.dump(tmp,f)
-        # with open('./y-test2/'+str(picid),'wb') as f:
-        #     pickle.dump(y,f)
+
+        with open('./ds_building/inputs'+xdir+'/'+str(picid),'wb') as f:
+            pickle.dump(tmp,f)
+        with open('./ds_building/inputs'+ydir+'/'+str(picid),'wb') as f:
+            pickle.dump(y,f)
 
 
 
