@@ -10,8 +10,8 @@ import pickle
 from in_model_manager import *
 
 
-# model = getTempModel()
-model = getModel1()
+model = getTempModel()
+# model = getModel1()
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -25,23 +25,33 @@ picid = 0
 if 'x2' not in os.listdir():  
     os.mkdir('./x2')
     os.mkdir('./y2')
+if 'x-test2' not in os.listdir():  
+    os.mkdir('./x-test2')
+    os.mkdir('./y-test2')
 elif len(os.listdir('./x')) > 0:
     a = [int(x) for x in os.listdir('./x')]
-    picid = max(a)
+    picid = max(a) + 1
+    # a = [int(x) for x in os.listdir('./x-test')]
+    # picid = max(a) + 1
     print(picid)
 
-picid = 0
+# picid = 0
 
-# cap = cv2.VideoCapture('./history/videos/v-0-50-1.mp4')
-cap = cv2.VideoCapture('./videos/tester2.mp4')   
+# cap = cv2.VideoCapture('./videos/v-0-70-6.mp4')
+cap = cv2.VideoCapture('./videos/tester3.mp4')   
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,
-    min_tracking_confidence=0.5) as hands:
+    min_tracking_confidence=0.4) as hands:
+    # for f in range(2390):
+    #     f = str(f)
   while True:      
         res,image = cap.read()
         if not res:
             break
+        # image = cv2.imread('./pictures/'+f+'.png')
+        # with open('./results/'+f,'rb') as fl:
+        #     result = pickle.load(fl)
         
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -71,6 +81,7 @@ with mp_hands.Hands(
             continue
         
         x = results.multi_hand_landmarks
+        # x = result
         tmp = []
         for i in range(21):
 
@@ -128,7 +139,7 @@ with mp_hands.Hands(
             idx = 2
         elif (k == ord('f')):
             idx = 3
-        elif (k == ord('c') or k == ord('c')):
+        elif (k == ord('c') or k == ord('v')):
             idx = 4
         elif (k == ord('j')):
             idx = 5
@@ -147,10 +158,14 @@ with mp_hands.Hands(
 
         y = [0 for i in range(10)]
         y[idx] = 1
-        with open('./x2/'+str(picid),'wb') as f:
-            pickle.dump(tmp,f)
-        with open('./y2/'+str(picid),'wb') as f:
-            pickle.dump(y,f)
+        # with open('./x2/'+str(picid),'wb') as f:
+        #     pickle.dump(tmp,f)
+        # with open('./y2/'+str(picid),'wb') as f:
+        #     pickle.dump(y,f)
+        # with open('./x-test2/'+str(picid),'wb') as f:
+        #     pickle.dump(tmp,f)
+        # with open('./y-test2/'+str(picid),'wb') as f:
+        #     pickle.dump(y,f)
 
 
 

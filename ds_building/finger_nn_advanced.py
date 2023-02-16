@@ -126,7 +126,8 @@ def new_model():
         # input layer
         tf.keras.layers.Flatten(input_shape=((126,))),
         # middle layers
-        tf.keras.layers.Dense(45, activation='sigmoid'),
+        tf.keras.layers.GaussianNoise(0.01),
+        tf.keras.layers.Dense(60, activation='sigmoid'),
         # testing purpose layer
         # tf.keras.layers.Dropout(0.2),
         # output layer
@@ -154,18 +155,20 @@ loss_fn = tf.keras.losses.CategoricalCrossentropy()
 
 x_test1,y_test1 = load_test()
 
+# tf.keras.metrics.P
 # compile model
 model.compile(optimizer='adam',
             loss=loss_fn,
-            metrics=['accuracy'])
+            metrics=[tf.keras.metrics.CategoricalAccuracy()])
 
 
 
-es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
+# es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
 # tf.keras.callbacks.Callback().
 class Cb(tf.keras.callbacks.Callback):
     def on_train_begin(self, logs = None):
-        l = {'accuracy':[],'loss':[],'val_loss':[],'val_accuracy':[],'mytest-los':[],'mytest-acc':[]}
+        # l = {'accuracy':[],'loss':[],'val_loss':[],'val_accuracy':[],'mytest-los':[],'mytest-acc':[]}
+        l = {'categorical_accuracy':[],'loss':[],'val_loss':[],'val_categorical_accuracy':[],'mytest-los':[],'mytest-acc':[]}
         with open('ext-test-log','wb') as f:
             pickle.dump(l,f)
 
@@ -193,9 +196,10 @@ class Cb(tf.keras.callbacks.Callback):
             self.model.stop_training = True
 
 cb = Cb()
+es = tf.keras.callbacks.EarlyStopping(monitor='mytest-acc', min_delta = 0.03, patience=100, restore_best_weights=True,start_from_epoch =500)
 
 # training
-train_h = model.fit(x_train, y_train, epochs=5000, batch_size=50, validation_split=0.2, callbacks=cb)
+train_h = model.fit(x_train, y_train, epochs=5000, batch_size=50, validation_split=0.4, callbacks=[cb,es])
 
 # model_hidden-layer-neurons_epochs_batch-size
 model.save('model-0-73')

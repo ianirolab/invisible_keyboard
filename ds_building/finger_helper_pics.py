@@ -1,12 +1,17 @@
+# A mix between finger tester and finger picker, improves image picking by guessing the finger 
+
+
+import os
 import tensorflow as tf
 import cv2, requests
 import numpy as np
 import mediapipe as mp
 import pickle
-import os
-from in_model_manager import getModel0, getModel1
+from in_model_manager import *
 
-model = getModel1()
+
+model = getTempModel()
+# model = getModel1()
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -14,20 +19,21 @@ mp_hands = mp.solutions.hands
 
 
 lastid = 0
-idx = 0
 notpushing = 0
 cv2.startWindowThread()
+picid = 2390
 
-# cap = cv2.VideoCapture('./videos/v-0-70-1.mp4')
-pics = os.listdir('pictures')
+
+# cap = cv2.VideoCapture('./videos/v-0-70-6.mp4')
+# cap = cv2.VideoCapture('./videos/tester3.mp4')   
 with mp_hands.Hands(
     model_complexity=1,
     min_detection_confidence=0.8,
-    min_tracking_confidence=0.5) as hands:
-  while True:      
-        res,image = cv2.imread('./picutres/'+pics[idx])
-        if not res:
-          break
+    min_tracking_confidence=0.4) as hands:
+    while picid < 3213:
+        image = cv2.imread('./pictures/'+str(picid)+'.png')
+        with open('./results/'+str(picid),'rb') as fl:
+            result = pickle.load(fl)
         
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -52,11 +58,10 @@ with mp_hands.Hands(
         # Flip the image horizontally for a selfie-view display.
         cv2.imshow('MediaPipe Hands', cv2.resize(cv2.flip(image, 1),(1280,720)))
 
-        if (not results.multi_hand_landmarks )or len(results.multi_hand_landmarks) != 2:
-            cv2.waitKey(1)
-            continue
         
-        x = results.multi_hand_landmarks
+        
+        x = result
+        # x = result
         tmp = []
         for i in range(21):
 
@@ -76,15 +81,12 @@ with mp_hands.Hands(
         fontColor              = (0,255,0)
         thickness              = 2
         lineType               = 2
-        # if model(np.array([tmp])) < 0.3:
-        #     text = 'Raised'
-        # else:
-        #     text = 'Pushing'
+
         res = model(np.array([tmp])).numpy()
-        rl = np.round(res,decimals=2).tolist()[0]
-        
-        stautuses = ('sx mig','sx_anu','sx_mid','sx_ind','thumb','dx_ind','dx_mid','dx_anu','dx_mig','raised')
-        text = stautuses[rl.index(max(rl))]
+        rl = res.tolist()[0]
+        idx = rl.index(max(rl))
+        stautuses = ('sx_mig','sx_anu','sx_mid','sx_ind','thumb','dx_ind','dx_mid','dx_anu','dx_mig','raised')
+        text = stautuses[idx]
 
         image = cv2.resize(cv2.flip(image, 1),(1280,720))
         
@@ -99,16 +101,29 @@ with mp_hands.Hands(
 
         cv2.imshow('MediaPipe Hands', image)
 
-        # cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
-        # lastid += 1 
-        # if model(np.array([tmp])).numpy()[0][0] > 0.8:
-        #     cv2.imwrite('./supposed_pushing/'+str(lastid)+'.png',image)
-        #     lastid += 1
-        # else:
-        #     notpushing += 1
-        # print(notpushing)
         
-        idx+=1
+        
+        if(idx == 9 or idx == 4):
+            picid+=1
+            cv2.waitKey(1)
+            continue
 
-        if cv2.waitKey(0) & 0xFF == 27:
-            break
+        k = cv2.waitKey(0)
+        if (k == 50):
+            picid -= 1
+            continue
+
+        if (k >= 97 and k <= 122) or k in (ord(' '), ord(';'), ord(','), ord('.'), ord('/')):
+            y = chr(k)
+            with open('./x3/'+text+'/'+str(picid),'wb') as f:
+                pickle.dump(tmp,f)
+            with open('./y3/'+text+'/'+str(picid),'wb') as f:
+                pickle.dump(y,f)
+            # with open('./x-test2/'+str(picid),'wb') as f:
+            #     pickle.dump(tmp,f)
+            # with open('./y-test2/'+str(picid),'wb') as f:
+            #     pickle.dump(y,f)
+
+            print(picid)
+
+        picid+=1

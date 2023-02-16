@@ -10,3 +10,4 @@ train_h
 videos*
 ext-test-log
 __pycache*
+history*
