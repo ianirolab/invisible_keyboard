@@ -1,3 +1,13 @@
+# View all recorded frames and classify them. This will create the dataset for the neural network
+# To classify a frame, user will input a key, corresponding to the finger that is currently being pressed
+# the key-finger relationship is the same as putting fingers on a keyboard in the standard position, 
+# in the middle row. The only exception, for pratical reasons is the thumbs, which correspond to 
+# 'c' or 'v' instead of spacebar, which is reserved for 'raised' status.
+# Additionally it's also possible to undo last classification by pressing 2, and change the classification
+# by pressing 'q'
+#
+# Results are stored in the file pushing.txt
+
 import os
 import cv2
 
@@ -12,19 +22,17 @@ r_mid = []
 r_ind = []
 raised = []
 
-names = os.listdir('./pictures')
+names = os.listdir('./ds_building/inputs/pictures')
 names.sort()
 
-cv2.namedWindow('Picture')        # Create a named window
-cv2.moveWindow('Picture', 0,0)
+cv2.namedWindow('Finger Picker')
 
 i = 9000 
 maxi = i + 1000
 while (i < maxi ):
-# while (i < 10):
     try:
         fname = names[names.index(str(i) + '.png')]
-        img = cv2.imread('./pictures/' + fname)
+        img = cv2.imread('./ds_building/inputspictures/' + fname)
     except:
         i+=1
         continue
@@ -55,30 +63,17 @@ while (i < maxi ):
     elif (k == ord(';')):
         r_mig.append(fname)
     elif (k == ord('2')):
-        os.remove('./pictures/' + fname)
-        os.remove('./results/' + fname[:-4])
+        os.remove('./ds_building/inputs/pictures/' + fname)
+        os.remove('./ds_building/inputs/results/' + fname[:-4])
     
     i += 1
 
     cv2.destroyAllWindows()
 
-# complete = l_mig.copy()
-# complete.extend(l_anu)
-# complete.extend(l_mid)
-# complete.extend(l_ind)
-# complete.extend(r_mig)
-# complete.extend(r_anu)
-# complete.extend(r_mid)
-# complete.extend(r_ind)
-# complete.extend(thumb)
-
-# for f in os.listdir('pictures'):
-#     if f not in complete:   
-#         raised.append(f)    
 
 lists = [l_mig,l_anu,l_mid,l_ind,thumb,r_ind,r_mid,r_anu,r_mig, raised]
 
-with open('pushing.txt','a') as f:
+with open('./ds_building/pushing.txt','w') as f:
     for i in range(len(lists)):
         for img in lists[i]: 
             f.write(img +' '+str(i) +'\n') 

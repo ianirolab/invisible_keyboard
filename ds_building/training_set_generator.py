@@ -1,9 +1,11 @@
+# Creates a dataset from results folder and pushing.txt file
+
 import os
 import shutil
 import pickle
 
 lines = []
-with open('pushing.txt','r') as f:
+with open('./ds_building/pushing.txt','r') as f:
     lines = f.readlines()
 
 for i in range(len(lines)):
@@ -12,9 +14,7 @@ for i in range(len(lines)):
     lines[i][0] = lines[i][0][:idx]
     
 ct = 0
-for n in os.listdir('results'):
-    # if ct == 70:
-    #     break
+for n in os.listdir('./ds_building/inputs/results'):
     flag = False
     for l in lines:
         if l[0] == n:
@@ -27,15 +27,15 @@ for n in os.listdir('results'):
 
 
 if 'x' not in os.listdir(): 
-    os.mkdir('./x')
-    os.mkdir('./y')
+    os.mkdir('./ds_building/inputs/x')
+    os.mkdir('./ds_building/inputs/y')
 
 for i in range(len(lines)):
-    shutil.copy('./results/' + lines[i][0],'./x')
+    shutil.copy('./ds_building/inputs/results/' + lines[i][0],'./ds_building/inputs/x')
     arr = [0 for i in range(10)]
     arr[int(lines[i][1])] = 1
 
-    with open('./y/' + lines[i][0],'wb') as f:
+    with open('./ds_building/inputs/y/' + lines[i][0],'wb') as f:
         pickle.dump(arr,f)
 
         
