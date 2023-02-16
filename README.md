@@ -1,12 +1,12 @@
-# Invisible keyboard
-# Camera setup: 
-Connect android phone (with usb debugging active) with IP camera via USB and run
-adb forward tcp:5555 tcp:IP_CAMERA_PORT
+# Camera keyboard
+# Tester setup:
 
-#Workflow for pushing_nn:
-- After connecting the camera, run cam_through_mp2.py, with that 1000 frames with both hands appearing will be saved to ./pictures.
-- Use image_picker.py to remove a picture(2), mark it as pushing(1), mark it as raised (any key - 0). With left arrow key, it's possible to go back in case of error. This will generate pushing.txt
-- Use training_set_generator.py to create folders x and y that will respectively hold inputs and outputs for the nn. Output files are based on pushing.txt
+According to the type of input, select one of the 3 cap initializations in key_tester. Camera must be in selfie view (image flipped) for the tester to work
 
-- Run the training with pushing_nn
-- Finally have a look at the results plotted with graphs.py and test the nn with pushing_tester.py
+# Tester files:
+
+key_tester.py: runs camera input through both the finger recognition and the key recognition models 
+ds_building/finger_tester.py: runs camera input only through the finger recognition model 
+
+Testers won't save any data, they only provide a way of testing live (or through a saved video) the neural networks. 
+Testers will predict in the top left corner the key that is being pushed, as well as detecting the status of "raised hands".The neural network(s) will be triggered when both hands are visible by mediapipe

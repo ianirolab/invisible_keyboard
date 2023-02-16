@@ -19,7 +19,7 @@ def getTempModel():
     return tf.keras.models.load_model('./model-temp/model-temp-800')
 
 def getKeyModel(name):
-    return tf.keras.models.load_model('./key_models/model-0-83/'+name)
+    return tf.keras.models.load_model('./KeyModel/'+name)
 
 
 def dataset_merger():

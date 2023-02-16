@@ -151,7 +151,7 @@ for m in models:
     
     x_train, y_train =load_dataset(m,key_map[m])
     models[m].fit(x_train, y_train, epochs=5000, batch_size=10, validation_data = (x_test1, y_test1), callbacks=[cb,es])
-    models[m].save('./key_models/model-0-83/' + m)
+    models[m].save('./key_models/model-0-84/' + m)
 
 # model_hidden-layer-neurons_epochs_batch-size
 
