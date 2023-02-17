@@ -10,21 +10,22 @@ from in_model_manager import key_db_setup
 
 xid = 0
 
-xdir = 'x1'
-ydir = 'y1'
-
-# xdir = 'x-test1'
-# ydir = 'y-test1'
+# xdir = 'x1'
+# ydir = 'y1'
+xdir = 'x-test1'
+ydir = 'y-test1'
 
 key_db_setup(xdir, ydir)
 
-for dir in os.listdir('results'):
+for dir in os.listdir('./inputs/results'):
     if (dir in ['raised','thumb']):
     # if (dir not in ['']):
         continue
     print(dir)
  
-    fls = [int(fl) for fl in os.listdir('results/'+dir+'/')]
+    fls = [int(fl) for fl in os.listdir('./inputs/results/'+dir+'/')]
+    if (len(fls) == 0):
+        continue
 
     # loop through pictures
     for i in range(max(fls)):
@@ -45,9 +46,9 @@ for dir in os.listdir('results'):
 
         if (k >= 97 and k <= 122) or k in (ord(';'), ord(','), ord('.'), ord('/')):
             y = chr(k)
-            with open('./'+xdir+'/'+dir+'/'+str(xid),'wb') as f:
+            with open('./inputs/'+xdir+'/'+dir+'/'+str(xid),'wb') as f:
                 pickle.dump(result,f)
-            with open('./'+ydir+'/'+dir+'/'+str(xid),'wb') as f:
+            with open('./inputs/'+ydir+'/'+dir+'/'+str(xid),'wb') as f:
                 pickle.dump(y,f)
             xid+=1
 

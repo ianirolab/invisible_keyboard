@@ -6,11 +6,10 @@ import numpy as np
 import random
 from graphs import plot
 import tensorflow as tf
+from globals import key_map
 
 model_version = '0-84'
 
-key_map = {'sx_mig':['q','a','z'],'sx_anu':['w','s','x'],'sx_mid':['e','d','c'],'sx_ind':['r','t','f','g','c','v'],
-          'dx_ind':['y','u','h','j','n','m'],'dx_mid':['i','k',','],'dx_anu':['o','l','.'],'dx_mig':['p',';','/']}
 
 # Load pickle files 
 # xdir: directory of x files
@@ -69,6 +68,7 @@ def new_model(outs):
 # Models setup
 models = {'sx_mig':new_model(3),'sx_anu':new_model(3),'sx_mid':new_model(3),'sx_ind':new_model(6),
           'dx_ind':new_model(6),'dx_mid':new_model(3),'dx_anu':new_model(3),'dx_mig':new_model(3)}
+# models = {'dx_mid':new_model(3)}
 
 
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
@@ -87,8 +87,8 @@ class Cb(tf.keras.callbacks.Callback):
         if(epoch % 50 == 0):
             plot(self.l,self.name)
 
-        # if(epoch > 300):
-        #     self.model.stop_training = True
+        if(epoch > 300):
+            self.model.stop_training = True
 
 es = tf.keras.callbacks.EarlyStopping(monitor='val_categorical_accuracy', mode=max, patience=300, restore_best_weights=True)
 

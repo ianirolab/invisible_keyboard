@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import mediapipe as mp
 from in_model_manager import  getFingerModel, getKeyModel
-from key_nn import key_map
+from globals import key_map,font,fontColor,fontScale,bottomLeftCornerOfText,thickness,lineType
 
 stautuses = tuple(key_map.keys())
 
@@ -19,12 +19,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-font                   = cv2.FONT_HERSHEY_SIMPLEX
-bottomLeftCornerOfText = (10,30)
-fontScale              = 1
-fontColor              = (0,255,0)
-thickness              = 2
-lineType               = 2
+
 
 cv2.startWindowThread()
 cap = cv2.VideoCapture(0)   

@@ -1,8 +1,17 @@
 # Creates a dataset from results folder and pushing.txt file
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import os
 import shutil
 import pickle
+from in_model_manager import db_setup
+
+# xdir = 'x1'
+# ydir = 'y1'
+xdir = 'x-test1'
+ydir = 'y-test1'
+
+db_setup(xdir,ydir)
 
 lines = []
 with open('./ds_building/pushing.txt','r') as f:
@@ -25,17 +34,13 @@ for n in os.listdir('./ds_building/inputs/results'):
         lines.append([n,9])
         ct += 1
 
-
-if 'x' not in os.listdir(): 
-    os.mkdir('./ds_building/inputs/x')
-    os.mkdir('./ds_building/inputs/y')
-
 for i in range(len(lines)):
-    shutil.copy('./ds_building/inputs/results/' + lines[i][0],'./ds_building/inputs/x')
+    shutil.copy('./ds_building/inputs/results/' + lines[i][0],'./ds_building/inputs/'+xdir+'/' + lines[i][0])
+    
     arr = [0 for i in range(10)]
     arr[int(lines[i][1])] = 1
 
-    with open('./ds_building/inputs/y/' + lines[i][0],'wb') as f:
+    with open('./ds_building/inputs/'+ydir+'/' + lines[i][0],'wb') as f:
         pickle.dump(arr,f)
 
         

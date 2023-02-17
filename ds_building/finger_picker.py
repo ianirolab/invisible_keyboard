@@ -27,12 +27,12 @@ names.sort()
 
 cv2.namedWindow('Finger Picker')
 
-i = 9000 
+i = 0
 maxi = i + 1000
 while (i < maxi ):
     try:
         fname = names[names.index(str(i) + '.png')]
-        img = cv2.imread('./ds_building/inputspictures/' + fname)
+        img = cv2.imread('./ds_building/inputs/pictures/' + fname)
     except:
         i+=1
         continue

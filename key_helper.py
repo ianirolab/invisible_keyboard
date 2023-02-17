@@ -2,14 +2,12 @@
 # Having guesses while recording pictures helps finding hand position with which the neural network
 # is not familiar with 
 
-import os
-import tensorflow as tf
 import cv2
 import numpy as np
 import mediapipe as mp
 import pickle
 from in_model_manager import  getFingerModel, getKeyModel, key_db_setup
-from key_nn import key_map
+from globals import key_map,font,fontColor,fontScale,bottomLeftCornerOfText,thickness,lineType
 
 stautuses = tuple(key_map.keys())
 
@@ -24,16 +22,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-font                   = cv2.FONT_HERSHEY_SIMPLEX
-bottomLeftCornerOfText = (10,30)
-fontScale              = 1
-fontColor              = (0,255,0)
-thickness              = 2
-lineType               = 2
-
-# Database setup
-if 'pictures' not in os.listdir():
-    key_db_setup('pictures', 'results')
+key_db_setup('pictures', 'results')
 
 cv2.startWindowThread()
 cap = cv2.VideoCapture(0)   
@@ -127,8 +116,8 @@ with mp_hands.Hands(
                 text = key_map[stautuses[finger]][key]
                 
                 # Save picture
-                cv2.imwrite('pictures/'+stautuses[finger]+'/'+str(picid)+'.png',cv2.flip(image,1))
-                with open('results/'+stautuses[finger]+'/'+str(picid),'wb') as fl:
+                cv2.imwrite('./inputs/pictures/'+stautuses[finger]+'/'+str(picid)+'.png',cv2.flip(image,1))
+                with open('./inputs/results/'+stautuses[finger]+'/'+str(picid),'wb') as fl:
                     pickle.dump(tmp,fl)
 
                 picid+=1
